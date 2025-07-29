@@ -2,12 +2,22 @@ from json import load, dump
 import datetime
 import requests
 from groq import Groq
-import  pyttsx3 
+import pyttsx3 
 import speech_recognition as sr
+import os
+from dotenv import load_dotenv
+
+# Load environment variables
+load_dotenv()
+
 # User and Assistant details
 Username = "Aditya"
 Assistantname = "Jarvis"
-GroqAPIKey = "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"
+GroqAPIKey = os.getenv('GROQ_API_KEY')
+
+# Validate API key
+if not GroqAPIKey:
+    raise ValueError("GROQ_API_KEY not found in environment variables")
 
 # Initializing the Groq client
 client = Groq(api_key=GroqAPIKey)
@@ -15,7 +25,8 @@ client = Groq(api_key=GroqAPIKey)
 # System instructions
 System = f"""Hello, I am {Username}. You are a very accurate and advanced AI chatbot named {Assistantname}, which has real-time up-to-date information from the internet.
 *** Provide answers in a professional way, making sure to use proper grammar, punctuation, and formal tone. ***
-*** Just answer the question from the provided data in a professional way. ***"""
+*** Just answer the question from the provided data in a professional way.
+Make the response short and concise.***"""
 
 # Load chat history
 try:
@@ -27,7 +38,9 @@ except FileNotFoundError:
 
 # Function to get current weather information
 def get_weather(city_name):
-    api_key = "fc3b1eb09d67c9ebd2d39e4fc7d2bb41"
+    api_key = os.getenv('OPENWEATHER_API_KEY')
+    if not api_key:
+        return "OpenWeatherMap API key not configured"
     base_url = "http://api.openweathermap.org/data/2.5/weather"
     params = {"q": city_name, "appid": api_key, "units": "metric"}
     response = requests.get(base_url, params=params)
@@ -129,4 +142,5 @@ def main(user_input):
         # Provide output
     # speak(jar, response)
     return (response)
+
 # main()

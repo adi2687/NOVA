@@ -1,30 +1,43 @@
 from google_auth_oauthlib.flow import InstalledAppFlow
 from googleapiclient.discovery import build
 from google.auth.transport.requests import Request
+from datetime import datetime
 import os
 import pickle
 
-# Step 1: Set up OAuth scopes
 SCOPES = ['https://www.googleapis.com/auth/calendar']
 
 def authenticate_google_calendar():
     creds = None
+
     if os.path.exists('token.pickle'):
         with open('token.pickle', 'rb') as token:
-            creds = pickle.load(token)
+            try:
+                creds = pickle.load(token)
+            except Exception:
+                print("Corrupted token file. Deleting and reauthenticating...")
+                os.remove('token.pickle')
+                creds = None
 
-    # If no valid credentials, authenticate the user
     if not creds or not creds.valid:
         if creds and creds.expired and creds.refresh_token:
-            creds.refresh(Request())
-        else:
+            try:
+                creds.refresh(Request())
+            except Exception as e:
+                print("Token refresh failed. Deleting token and reauthenticating...")
+                os.remove('token.pickle')
+                creds = None
+
+        if not creds:
             flow = InstalledAppFlow.from_client_secrets_file(
-                'credentials.json', SCOPES)  # Replace with your OAuth credentials file
+                'credentials.json', SCOPES)
             creds = flow.run_local_server(port=0)
-        # Save credentials for future use
+
         with open('token.pickle', 'wb') as token:
             pickle.dump(creds, token)
+
     return creds
+
 def get_upcoming_events():
     creds = authenticate_google_calendar()
     service = build('calendar', 'v3', credentials=creds)
@@ -43,7 +56,9 @@ def get_upcoming_events():
     for event in events:
         start = event['start'].get('dateTime', event['start'].get('date'))
         location = event.get('location', 'No location')
-        attendees = ', '.join([attendee['email'] for attendee in event.get('attendees', [])]) if 'attendees' in event else 'No attendees'
+        attendees = ', '.join(
+            [attendee['email'] for attendee in event.get('attendees', [])]
+        ) if 'attendees' in event else 'No attendees'
         description = event.get('description', 'No description')
         
         print(f"Event: {event['summary']}")
@@ -52,6 +67,7 @@ def get_upcoming_events():
         print(f"Attendees: {attendees}")
         print(f"Description: {description}")
         print("=" * 40)
+
 def create_event_with_reminder():
     creds = authenticate_google_calendar()
     service = build('calendar', 'v3', credentials=creds)
@@ -61,7 +77,7 @@ def create_event_with_reminder():
         'location': 'Online',
         'description': 'This is a test event.',
         'start': {
-            'dateTime': '2025-01-30T10:00:00-07:00',  # Start time in ISO 8601 format
+            'dateTime': '2025-01-30T10:00:00-07:00',
             'timeZone': 'America/Los_Angeles',
         },
         'end': {
@@ -71,7 +87,7 @@ def create_event_with_reminder():
         'reminders': {
             'useDefault': False,
             'overrides': [
-                {'method': 'popup', 'minutes': 10},  # Popup reminder 10 minutes before
+                {'method': 'popup', 'minutes': 10},
             ],
         },
     }
@@ -82,13 +98,12 @@ def create_event_with_reminder():
     ).execute()
 
     print(f"Event created: {event.get('htmlLink')}")
-from datetime import datetime, timedelta
 
 def get_events_for_today():
     creds = authenticate_google_calendar()
     service = build('calendar', 'v3', credentials=creds)
 
-    today = datetime.utcnow().isoformat() + 'Z'  # Current time in UTC
+    today = datetime.utcnow().isoformat() + 'Z'
     events_result = service.events().list(
         calendarId='primary',
         timeMin=today,
@@ -105,4 +120,5 @@ def get_events_for_today():
         start = event['start'].get('dateTime', event['start'].get('date'))
         print(f"{event['summary']} - {start}")
 
+# Run for test
 create_event_with_reminder()

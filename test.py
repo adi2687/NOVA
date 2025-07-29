@@ -1,3 +1,4 @@
+
 import tkinter as tk
 from threading import Thread
 from nova_alpha import main,speak,setup_nova
@@ -13,14 +14,28 @@ import requests
 from PIL import Image, ImageTk
 import google.generativeai as genai
 from todo import todomain
-import requests
 import time
 import pyttsx3
 import subprocess
 from groq import Groq
+import os
+from dotenv import load_dotenv
 
-GroqAPIKey = "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"
-genai.configure(api_key=("AIzaSyC_vdf5ZoD7te2A-R2tpmL0GrZgGopODfQ"))
+# Load environment variables
+load_dotenv()
+
+# Initialize API keys
+GroqAPIKey = os.getenv('GROQ_API_KEY')
+gemini_api_key = os.getenv('GEMINI_API_KEY')
+
+# Validate API keys
+if not GroqAPIKey:
+    raise ValueError("GROQ_API_KEY not found in environment variables")
+if not gemini_api_key:
+    raise ValueError("GEMINI_API_KEY not found in environment variables")
+
+# Configure APIs
+genai.configure(api_key=gemini_api_key)
 # Initialise the groq client with the api key
 client = Groq(api_key=GroqAPIKey)
 
@@ -408,7 +423,9 @@ def get_location_by_ip():
         return "Unable to fetch location", None, None
     
 location, latitude, longitude = get_location_by_ip()
-API_KEY = "fc3b1eb09d67c9ebd2d39e4fc7d2bb41"
+API_KEY = os.getenv('OPENWEATHER_API_KEY')
+if not API_KEY:
+    raise ValueError("OPENWEATHER_API_KEY not found in environment variables")
 # n to get weather using latitude and longitude
 def get_weather(lat, lon, api_key):
     try:

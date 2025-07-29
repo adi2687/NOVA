@@ -47,7 +47,7 @@ def read_list_from_file():
 def write_list_to_file():
     with open('Tasks/todolist.txt', 'w') as file:
         for task in todolist:
-            file.write(f"{task}\n")
+            file.write(task + '\n')
 
 todolist = read_list_from_file()
 

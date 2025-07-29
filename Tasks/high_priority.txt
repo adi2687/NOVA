@@ -1,1 +1,5 @@
+<<<<<<< HEAD
 in my list to call name at 2pm high priority
+=======
+in my list to call name at 2pm high priority
+>>>>>>> f446c72451a94f4cee0e2b766e0ffa2f2ffbdb21
