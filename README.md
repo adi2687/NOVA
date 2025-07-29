@@ -2,7 +2,6 @@
 
 Forget boring, cookie-cutter AI assistants. NOVA is your all-in-one digital sidekick that takes control, handles your hustle, and gets things done on your terms.
 
-<<<<<<< HEAD
 Why NOVA is a Game-Changer:
 🚀 Command Your OS: Control system settings like a pro—change volume, mute calls, open apps, or shut things down with a snap.
 🗓️ Schedule Like a Boss: Manage appointments, set reminders, and track to-do lists synced with Google Calendar straight to your phone.
@@ -34,6 +33,5 @@ Why NOVA is a Game-Changer:
 
 More Than Just an AI—Your Ride-or-Die Tech Partner NOVA isn’t here to be polite. It's here to handle the grind, boost your productivity, and make life smoother. 
 From running your OS to keeping you on track, it’s your tech BFF.
->>>>>>> f446c72451a94f4cee0e2b766e0ffa2f2ffbdb21
 
 Ready to level up your assistant game? NOVA is already waiting.
